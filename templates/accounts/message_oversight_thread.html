@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversation - Message Oversight</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #F4F8F7; padding: 32px; color: #0A2E2F; }
+
+        .header {
+            background: #0A2E2F;
+            color: white;
+            padding: 24px 28px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(21,122,115,.4);
+            top: -70px; right: 10%;
+        }
+        .header-l { position: relative; z-index: 1; }
+        .header h1 { font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+        .header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+        .back-link {
+            position: relative; z-index: 1;
+            color: rgba(255,255,255,.75);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-link:hover { color: #fff; }
+
+        .info-box {
+            display: flex;
+            gap: 10px;
+            background: #E6F4F3;
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-top: 18px;
+        }
+        .info-box i { color: #157A73; font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+        .info-box p { font-size: 11.5px; color: #0A2E2F; line-height: 1.5; margin: 0; }
+
+        .card {
+            background: #fff;
+            border: 1px solid #E5EEEC;
+            border-radius: 14px;
+            padding: 22px 26px;
+            margin-top: 18px;
+        }
+        .card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0A2E2F;
+            margin-bottom: 18px;
+        }
+
+        .msg-row {
+            display: flex;
+            margin-bottom: 14px;
+        }
+        .msg-row.from-student { justify-content: flex-start; }
+        .msg-row.from-supervisor { justify-content: flex-end; }
+
+        .bubble {
+            max-width: 60%;
+            padding: 11px 15px;
+            border-radius: 12px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .from-student .bubble {
+            background: #F0F6F5;
+            color: #0A2E2F;
+            border-bottom-left-radius: 3px;
+        }
+        .from-supervisor .bubble {
+            background: #E0E7FF;
+            color: #1E1B4B;
+            border-bottom-right-radius: 3px;
+        }
+        .bubble-meta {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            margin-bottom: 4px;
+            opacity: .6;
+        }
+        .bubble-time {
+            font-size: 10px;
+            color: #94A3B8;
+            margin-top: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 40px;
+            color: #94A3B8;
+            font-size: 13px;
+        }
+        .empty i { font-size: 30px; display: block; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-l">
+            <h1>{{ student.user.get_full_name|default:student.user.username }} &harr; {{ supervisor.get_full_name|default:supervisor.username }}</h1>
+            <p>Message Oversight &middot; Read-only</p>
+        </div>
+        <a href="{% url 'message_oversight' %}" class="back-link">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Back to All Conversations
+        </a>
+    </div>
+
+    <div class="info-box">
+        <i class="ti ti-eye" aria-hidden="true"></i>
+        <p>You are viewing this conversation as an administrator for oversight purposes only.
+           There is no option to send a message into this thread.</p>
+    </div>
+
+    <div class="card">
+        <h2>Full Conversation</h2>
+
+        {% if thread %}
+            {% for msg in thread %}
+                <div class="msg-row {% if msg.sender == student.user %}from-student{% else %}from-supervisor{% endif %}">
+                    <div class="bubble">
+                        <div class="bubble-meta">
+                            {% if msg.sender == student.user %}
+                                {{ student.user.get_full_name|default:student.user.username }} (Student)
+                            {% else %}
+                                {{ supervisor.get_full_name|default:supervisor.username }} (Supervisor)
+                            {% endif %}
+                        </div>
+                        {% if msg.subject %}<strong>{{ msg.subject }}</strong><br>{% endif %}
+                        {{ msg.body }}
+                        <div class="bubble-time">{{ msg.sent_at|date:"d M Y, H:i" }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty">
+                <i class="ti ti-message-off" aria-hidden="true"></i>
+                No messages have been exchanged between these two yet.
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

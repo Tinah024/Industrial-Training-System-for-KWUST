@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .profile-wrap{max-width:640px;margin:32px auto;padding:0 20px;font-family:'Inter',sans-serif;}
+    .profile-head{margin-bottom:20px;}
+    .profile-head h2{font-size:22px;font-weight:700;color:#0A2E2F;margin:0 0 4px;}
+    .profile-head p{font-size:13px;color:#7A9290;margin:0;}
+
+    .pcard{background:#fff;border:1px solid #E5EEEC;border-radius:14px;padding:26px 28px;margin-bottom:18px;}
+    .pcard-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#157A73;text-transform:uppercase;letter-spacing:.05em;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid #F0F6F5;}
+
+    .field{margin-bottom:16px;}
+    .field label{display:block;font-size:12px;font-weight:600;color:#0A2E2F;margin-bottom:6px;}
+    .field input[type="text"],
+    .field input[type="number"],
+    .field input[type="date"],
+    .field textarea{
+        width:100%;padding:10px 13px;border:1px solid #DCE8E6;border-radius:8px;
+        font-size:14px;color:#0A2E2F;font-family:inherit;background:#FBFEFD;
+        transition:border-color .15s, box-shadow .15s;box-sizing:border-box;
+    }
+    .field input:focus, .field textarea:focus{outline:none;border-color:#157A73;box-shadow:0 0 0 3px rgba(21,122,115,.12);}
+
+    .save-btn{
+        display:inline-flex;align-items:center;gap:7px;background:#157A73;color:#fff;
+        font-size:14px;font-weight:600;padding:11px 22px;border-radius:9px;border:none;
+        cursor:pointer;transition:background .15s;
+    }
+    .save-btn:hover{background:#1A8F87;}
+
+    .success-msg{background:#DCFCE7;color:#166534;padding:10px 16px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:16px;}
+</style>
+
+<div class="profile-wrap">
+    <div class="profile-head">
+        <h2>Edit profile</h2>
+        <p>Update your placement and course details</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="success-msg">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="pcard">
+            <div class="pcard-title">Academic info</div>
+            <div class="field">
+                <label for="{{ form.registration_number.id_for_label }}">Registration number</label>
+                {{ form.registration_number }}
+            </div>
+            <div class="field">
+                <label for="{{ form.course.id_for_label }}">Course</label>
+                {{ form.course }}
+            </div>
+            <div class="field">
+                <label for="{{ form.year_of_study.id_for_label }}">Year of study</label>
+                {{ form.year_of_study }}
+            </div>
+        </div>
+
+        <div class="pcard">
+            <div class="pcard-title">Placement info</div>
+            <div class="field">
+                <label for="{{ form.company_name.id_for_label }}">Company name</label>
+                {{ form.company_name }}
+            </div>
+            <div class="field">
+                <label for="{{ form.company_address.id_for_label }}">Company address</label>
+                {{ form.company_address }}
+            </div>
+            <div class="field">
+                <label for="{{ form.placement_start_date.id_for_label }}">Placement start date</label>
+                {{ form.placement_start_date }}
+            </div>
+            <div class="field">
+                <label for="{{ form.placement_end_date.id_for_label }}">Placement end date</label>
+                {{ form.placement_end_date }}
+            </div>
+        </div>
+
+        <button type="submit" class="save-btn">Save changes</button>
+    </form>
+</div>
+{% endblock %}

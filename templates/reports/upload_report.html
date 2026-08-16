@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .rp-wrap{max-width:600px;margin:28px auto;font-family:'Inter',sans-serif;padding:0 16px;}
+    .rp-head{font-size:18px;font-weight:700;color:#0A2E2F;margin-bottom:16px;}
+    .pcard{background:#fff;border:1px solid #E5EEEC;border-radius:14px;padding:22px;margin-bottom:18px;}
+    .field{margin-bottom:14px;}
+    .field label{display:block;font-size:12px;font-weight:600;color:#0A2E2F;margin-bottom:6px;}
+    .field input{width:100%;padding:10px 13px;border:1px solid #DCE8E6;border-radius:8px;font-family:inherit;font-size:14px;}
+    .save-btn{background:#157A73;color:#fff;border:none;border-radius:9px;padding:10px 20px;font-weight:600;cursor:pointer;}
+    .save-btn:hover{background:#1A8F87;}
+    .success-msg{background:#DCFCE7;color:#166534;padding:10px 16px;border-radius:8px;font-size:13px;margin-bottom:14px;}
+    table{width:100%;border-collapse:collapse;}
+    th{text-align:left;font-size:10px;color:#94A3B8;text-transform:uppercase;padding:0 10px 8px;}
+    td{padding:10px;border-top:1px solid #F0F6F5;font-size:13px;}
+    .badge{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;}
+    .pending{background:#FEF3C7;color:#92400E;}
+    .reviewed{background:#DCFCE7;color:#166534;}
+    .approved{background:#DBEAFE;color:#1E40AF;}
+</style>
+
+<div class="rp-wrap">
+    <div class="rp-head">Upload Report</div>
+
+    {% if messages %}
+        {% for message in messages %}<div class="success-msg">{{ message }}</div>{% endfor %}
+    {% endif %}
+
+    <div class="pcard">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="field">
+                <label>Title</label>
+                {{ form.title }}
+            </div>
+            <div class="field">
+                <label>File</label>
+                {{ form.file }}
+            </div>
+            <button type="submit" class="save-btn">Submit Report</button>
+        </form>
+    </div>
+
+    <div class="pcard">
+        <h3 style="font-size:14px;margin-bottom:10px;">My Reports</h3>
+        <table>
+            <tr><th>Title</th><th>Submitted</th><th>Status</th></tr>
+            {% for r in my_reports %}
+            <tr>
+                <td><a href="{{ r.file.url }}" target="_blank" style="color:#157A73;">{{ r.title }}</a></td>
+                <td>{{ r.submitted_at|date:"d M Y" }}</td>
+                <td><span class="badge {{ r.status }}">{{ r.get_status_display }}</span></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" style="text-align:center;color:#94A3B8;padding:20px;">No reports submitted yet.</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

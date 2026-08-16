@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef6f5;
+            color: #0f2f2e;
+        }
+
+        .topbar {
+            background: #073b3a;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+        }
+
+        .topbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 22px;
+            font-size: 16px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .topbar a i {
+            font-size: 17px;
+        }
+
+        .topbar a:hover {
+            color: #9ee6dc;
+        }
+    </style>
+</head>
+<body>
+   <div class="topbar">
+    <a href="{% url 'dashboard' %}"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> Dashboard</a>
+    {% if request.user.role == 'student' %}
+        <a href="{% url 'messaging:inbox' %}"><i class="ti ti-mail" aria-hidden="true"></i> Messages</a>
+    {% else %}
+        <a href="{% url 'message_list' %}"><i class="ti ti-mail" aria-hidden="true"></i> Messages</a>
+    {% endif %}
+</div>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>

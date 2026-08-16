@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Conversation with {{ student.user.get_full_name }}</h2>
+
+<div class="thread">
+  {% for msg in thread %}
+    <div class="bubble {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+      <p>{{ msg.body }}</p>
+      <small>{{ msg.sent_at|date:"M d, H:i" }}</small>
+    </div>
+  {% empty %}
+    <p>No messages yet. Say hello!</p>
+  {% endfor %}
+</div>
+
+<form method="post" class="message-form">
+  {% csrf_token %}
+  <input type="text" name="subject" placeholder="Subject (optional)">
+  <textarea name="body" placeholder="Type your message..." required></textarea>
+  <button type="submit">Send</button>
+</form>
+{% endblock %}

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#F4F8F7;min-height:100vh;display:flex;}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        .a1{animation:slideIn .4s ease both}
+        .a2{animation:fadeUp .4s .05s ease both}
+        .a3{animation:fadeUp .4s .12s ease both}
+        .a4{animation:fadeUp .4s .2s ease both}
+        .a5{animation:fadeUp .4s .28s ease both}
+
+        /* SIDEBAR */
+        .sb{width:220px;background:#0A2E2F;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:10;}
+        .sb-top{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+        .sb-brand{display:flex;align-items:center;gap:10px;}
+        .sb-icon{width:36px;height:36px;border-radius:9px;background:#157A73;display:flex;align-items:center;justify-content:center;}
+        .sb-icon i{font-size:19px;color:#fff;}
+        .sb-name{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+        .sb-tagline{font-size:10px;color:rgba(255,255,255,.4);font-weight:400;}
+        .sb-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;}
+        .sb-av{width:32px;height:32px;border-radius:50%;background:#157A73;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+        .sb-uname{font-size:12px;font-weight:600;color:#fff;}
+        .sb-urole{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;}
+        .sb-nav{padding:12px 12px;flex:1;overflow:auto;}
+        .sb-sec{font-size:9px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 5px;}
+        .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;transition:background .15s;text-decoration:none;}
+        .ni:hover{background:rgba(255,255,255,.06);}
+        .ni.on{background:#157A73;}
+        .ni i{font-size:17px;color:rgba(255,255,255,.4);flex-shrink:0;}
+        .ni.on i{color:#fff;}
+        .ni-lbl{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);}
+        .ni.on .ni-lbl{color:#fff;}
+        .ni-badge{margin-left:auto;background:#E24B4A;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;}
+        .sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.07);}
+        .ni.out i{color:rgba(255,100,100,.45);}
+        .ni.out .ni-lbl{color:rgba(255,100,100,.55);}
+        .ni.out:hover{background:rgba(255,80,80,.08);}
+
+        .main{margin-left:220px;flex:1;padding:0;}
+        .tbar{height:56px;background:#fff;border-bottom:1px solid #E5EEEC;display:flex;align-items:center;justify-content:space-between;padding:0 24px;}
+        .tbar-l{font-size:15px;font-weight:600;color:#0A2E2F;}
+        .tbar-sub{font-size:12px;color:#7A9290;font-weight:400;margin-left:6px;}
+        .tbar-r{display:flex;align-items:center;gap:8px;}
+        .tb{width:34px;height:34px;border-radius:8px;border:1px solid #E5EEEC;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;text-decoration:none;}
+        .tb i{font-size:16px;color:#5B7674;}
+        .dot{width:6px;height:6px;border-radius:50%;background:#E24B4A;position:absolute;top:7px;right:7px;border:1.5px solid #fff;}
+        .av{width:34px;height:34px;border-radius:50%;background:#0A2E2F;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+
+        .body{padding:20px 24px;max-width:1100px;}
+
+        .hero{background:#0A2E2F;border-radius:14px;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;width:240px;height:240px;border-radius:50%;background:rgba(21,122,115,.45);top:-70px;left:40%;}
+        .hero-l{position:relative;z-index:1;}
+        .hero-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border-radius:99px;padding:4px 11px;font-size:10px;font-weight:600;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+        .hero-l h2{font-size:21px;font-weight:700;color:#fff;margin-bottom:5px;}
+        .hero-l p{font-size:13px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+        .hero-btn{display:inline-flex;align-items:center;gap:7px;background:#157A73;color:#fff;font-size:13px;font-weight:600;padding:10px 17px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;transition:background .15s;}
+        .hero-btn:hover{background:#1A8F87;}
+        .hero-btn i{font-size:15px;}
+        .hero-illo{font-size:70px;position:relative;z-index:1;animation:float 3.5s ease-in-out infinite;line-height:1;flex-shrink:0;margin-left:18px;}
+
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+        .sc{background:#fff;border:1px solid #E5EEEC;border-radius:12px;padding:15px 16px;transition:transform .2s,border-color .2s;}
+        .sc:hover{transform:translateY(-2px);border-color:#7FC2BC;}
+        .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+        .sc-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+        .sc-ico i{font-size:16px;}
+        .sc-pill{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;}
+        .sc-num{font-size:24px;font-weight:700;color:#0A2E2F;margin-bottom:2px;}
+        .sc-lbl{font-size:11px;color:#7A9290;}
+        .sc-bar{height:3px;background:#EEF4F3;border-radius:99px;margin-top:10px;overflow:hidden;}
+        .sc-fill{height:100%;border-radius:99px;transition:width 1s .3s ease;}
+
+        .grid{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px;}
+        .card{background:#fff;border:1px solid #E5EEEC;border-radius:13px;overflow:hidden;}
+        .ch{padding:13px 18px;border-bottom:1px solid #F0F6F5;display:flex;align-items:center;justify-content:space-between;}
+        .ch-l{display:flex;align-items:center;gap:8px;}
+        .ch-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+        .ch-ico i{font-size:14px;}
+        .ch-title{font-size:13px;font-weight:600;color:#0A2E2F;}
+        .ch-link{font-size:11px;color:#157A73;font-weight:500;cursor:pointer;text-decoration:none;}
+        .cb{padding:13px 18px;}
+        .er{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #F8FBFA;}
+        .er:last-child{border:none;}
+        .er-wk{width:28px;height:28px;border-radius:7px;background:#E5F4F2;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#157A73;flex-shrink:0;}
+        .er-info{flex:1;min-width:0;}
+        .er-title{font-size:12px;font-weight:500;color:#1E293B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .er-date{font-size:10px;color:#94A3B8;margin-top:1px;}
+        .bx{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;}
+        .bx-ok{background:#DCFCE7;color:#166534;}
+        .bx-wait{background:#FEF3C7;color:#92400E;}
+        .bx-grade{font-size:11px;font-weight:700;color:#157A73;}
+        .empty{text-align:center;padding:30px 10px;color:#94A3B8;font-size:13px;}
+        .empty i{font-size:32px;display:block;margin-bottom:8px;}
+
+        .tl{display:flex;flex-direction:column;}
+        .ti{display:flex;gap:10px;margin-bottom:11px;}
+        .ti:last-child{margin:0;}
+        .ti-dw{display:flex;flex-direction:column;align-items:center;}
+        .ti-d{width:9px;height:9px;border-radius:50%;margin-top:3px;flex-shrink:0;}
+        .ti-ln{width:1px;background:#E5EEEC;flex:1;margin:3px 0;}
+        .ti:last-child .ti-ln{display:none;}
+        .ti-b{flex:1;}
+        .ti-lbl{font-size:12px;font-weight:500;color:#1E293B;margin-bottom:1px;}
+        .ti-sub{font-size:10px;color:#94A3B8;}
+
+        .qa{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+        .qa-item{background:#fff;border:1px solid #E5EEEC;border-radius:11px;padding:13px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;text-decoration:none;}
+        .qa-item:hover{border-color:#7FC2BC;transform:translateY(-1px);}
+        .qa-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .qa-ico i{font-size:16px;}
+        .qa-lbl{font-size:12px;font-weight:600;color:#0A2E2F;}
+        .qa-sub{font-size:10px;color:#94A3B8;margin-top:1px;}
+
+        .sup-table{width:100%;border-collapse:collapse;}
+        .sup-table th{text-align:left;font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;padding:0 12px 10px;}
+        .sup-table td{padding:11px 12px;border-top:1px solid #F0F6F5;font-size:13px;color:#1E293B;}
+        .sup-table tr:hover td{background:#F8FBFA;}
+        .review-link{color:#157A73;text-decoration:none;font-size:12px;font-weight:500;}
+
+        .admin-card{background:#fff;border:1px solid #E5EEEC;border-radius:14px;padding:30px;text-align:center;}
+        .admin-card i{font-size:42px;color:#157A73;display:block;margin-bottom:14px;}
+        .admin-card p{font-size:14px;color:#5B7674;margin-bottom:18px;}
+    </style>
+</head>
+<body>
+
+<nav class="sb a1">
+    <div class="sb-top">
+        <div class="sb-brand">
+            <div class="sb-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
+            <div><div class="sb-name">KWUST</div><div class="sb-tagline">Industrial Training Monitor</div></div>
+        </div>
+    </div>
+    <div class="sb-user">
+        <div class="sb-av">{{ request.user.username|slice:":2"|upper }}</div>
+        <div>
+            <div class="sb-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="sb-urole">{{ request.user.role }}</div>
+        </div>
+    </div>
+    <div class="sb-nav">
+        <div class="sb-sec">Main</div>
+        <a href="{% url 'dashboard' %}" class="ni on"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span class="ni-lbl">Dashboard</span></a>
+        {% if request.user.role == 'student' %}
+        <a href="{% url 'my_logbook' %}" class="ni"><i class="ti ti-notebook" aria-hidden="true"></i><span class="ni-lbl">My Logbook</span></a>
+        <a href="{% url 'submit_logbook' %}" class="ni"><i class="ti ti-file-plus" aria-hidden="true"></i><span class="ni-lbl">Submit Entry</span></a>
+        {% elif request.user.role == 'supervisor' %}
+        <a href="{% url 'review_logbook_list' %}" class="ni"><i class="ti ti-notebook" aria-hidden="true"></i><span class="ni-lbl">Review Logbooks</span></a>
+        {% endif %}
+        <div class="sb-sec">Communication</div>
+        <a href="{% url 'messaging:inbox' %}" class="ni">
+            <i class="ti ti-mail" aria-hidden="true"></i>
+            <span class="ni-lbl">Messages</span>
+        </a>
+        <a href="{% url 'notifications' %}" class="ni"><i class="ti ti-bell" aria-hidden="true"></i><span class="ni-lbl">Notifications</span></a>
+        <div class="sb-sec">Account</div>
+        {% if request.user.role == 'supervisor' %}
+        <a href="{% url 'supervisor_profile_edit' %}" class="ni"><i class="ti ti-user-circle" aria-hidden="true"></i><span class="ni-lbl">My Profile</span></a>
+        {% elif request.user.role == 'student' %}
+        <a href="{% url 'my_profile' %}" class="ni"><i class="ti ti-user-circle" aria-hidden="true"></i><span class="ni-lbl">My Profile</span></a>
+        {% endif %}
+    </div>
+    <div class="sb-foot">
+        <a href="{% url 'logout' %}" class="ni out"><i class="ti ti-logout" aria-hidden="true"></i><span class="ni-lbl">Logout</span></a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="tbar a2">
+        <div>
+            <span class="tbar-l">
+                {% if request.user.role == 'student' %}Student Dashboard
+                {% elif request.user.role == 'supervisor' %}Supervisor Dashboard
+                {% else %}Admin Dashboard{% endif %}
+            </span>
+            <span class="tbar-sub">· KWUST Industrial Training System</span>
+        </div>
+        <div class="tbar-r">
+            <a href="{% url 'notifications' %}" class="tb"><i class="ti ti-bell" aria-hidden="true"></i><span class="dot"></span></a>
+            <a href="{% url 'messaging:inbox' %}" class="tb"><i class="ti ti-mail" aria-hidden="true"></i></a>
+            <div class="av">{{ request.user.username|slice:":2"|upper }}</div>
+        </div>
+    </div>
+
+    <div class="body">
+
+    {% if request.user.role == 'student' %}
+        {% widthratio weeks_logged 12 100 as weeks_percent %}
+        {% if weeks_logged %}
+            {% widthratio reviewed weeks_logged 100 as reviewed_percent %}
+            {% widthratio pending weeks_logged 100 as pending_percent %}
+        {% else %}
+            {% widthratio 0 1 100 as reviewed_percent %}
+            {% widthratio 0 1 100 as pending_percent %}
+        {% endif %}
+
+        <div class="hero a2">
+            <div class="hero-l">
+                <div class="hero-tag"><i class="ti ti-calendar" aria-hidden="true"></i> Week {{ weeks_logged }} of 12 Industrial Training</div>
+                <h2>Good day, {{ request.user.get_full_name|default:request.user.username }} </h2>
+                <p>{{ pending }} entr{{ pending|pluralize:"y,ies" }} pending review. Keep logging your weekly activities.</p>
+                <a href="{% url 'submit_logbook' %}" class="hero-btn"><i class="ti ti-plus" aria-hidden="true"></i> Submit This Week's Log</a>
+            </div>
+            <div class="hero-illo" aria-hidden="true"></div>
+        </div>
+
+        <div class="stats a3">
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#E5F4F2;"><i class="ti ti-notebook" style="color:#157A73;" aria-hidden="true"></i></div>
+                    <span class="sc-pill" style="background:#E5F4F2;color:#157A73;">{{ weeks_logged }}/12</span>
+                </div>
+                <div class="sc-num">{{ weeks_logged }}</div>
+                <div class="sc-lbl">Weeks logged</div>
+                <div class="sc-bar"><div class="sc-fill" data-width="{{ weeks_percent }}" style="background:#157A73;"></div></div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#DCFCE7;"><i class="ti ti-circle-check" style="color:#166534;" aria-hidden="true"></i></div>
+                    <span class="sc-pill" style="background:#DCFCE7;color:#166534;">reviewed</span>
+                </div>
+                <div class="sc-num">{{ reviewed }}</div>
+                <div class="sc-lbl">Reviewed</div>
+                <div class="sc-bar"><div class="sc-fill" data-width="{{ reviewed_percent }}" style="background:#22C55E;"></div></div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#FEF3C7;"><i class="ti ti-clock" style="color:#92400E;" aria-hidden="true"></i></div>
+                    <span class="sc-pill" style="background:#FEF3C7;color:#92400E;">pending</span>
+                </div>
+                <div class="sc-num">{{ pending }}</div>
+                <div class="sc-lbl">Pending</div>
+                <div class="sc-bar"><div class="sc-fill" data-width="{{ pending_percent }}" style="background:#F59E0B;"></div></div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#E0E7FF;"><i class="ti ti-star" style="color:#4338CA;" aria-hidden="true"></i></div>
+                    <span class="sc-pill" style="background:#E0E7FF;color:#4338CA;">progress</span>
+                </div>
+                <div class="sc-num">{{ weeks_percent }}%</div>
+                <div class="sc-lbl">Completion</div>
+                <div class="sc-bar"><div class="sc-fill" data-width="{{ weeks_percent }}" style="background:#4338CA;"></div></div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.sc-fill[data-width]').forEach(function(el) {
+                    var width = el.dataset.width;
+                    if (width !== undefined && width !== '') {
+                        el.style.width = width + '%';
+                    }
+                });
+            });
+        </script>
+
+        <div class="grid a4">
+            <div class="card">
+                <div class="ch">
+                    <div class="ch-l">
+                        <div class="ch-ico" style="background:#E5F4F2;"><i class="ti ti-notebook" style="color:#157A73;" aria-hidden="true"></i></div>
+                        <span class="ch-title">Recent logbook entries</span>
+                    </div>
+                    <a href="{% url 'my_logbook' %}" class="ch-link">View all →</a>
+                </div>
+                <div class="cb">
+                    {% if entries %}
+                        {% for entry in entries %}
+                        <div class="er">
+                            <div class="er-wk">W{{ entry.week_number }}</div>
+                            <div class="er-info">
+                                <div class="er-title">{{ entry.activities|truncatewords:8 }}</div>
+                                <div class="er-date">{{ entry.submitted_at|date:"d M Y" }}</div>
+                            </div>
+                            {% if entry.is_reviewed %}
+                                {% if entry.grade %}<span class="bx-grade">{{ entry.grade }}</span>{% else %}<span class="bx bx-ok">Reviewed</span>{% endif %}
+                            {% else %}
+                                <span class="bx bx-wait">Pending</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty"><i class="ti ti-notebook-off" aria-hidden="true"></i>No logbook entries yet. Submit your first entry to get started.</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="ch">
+                    <div class="ch-l">
+                        <div class="ch-ico" style="background:#F0FDF4;"><i class="ti ti-activity" style="color:#166534;" aria-hidden="true"></i></div>
+                        <span class="ch-title">Activity timeline</span>
+                    </div>
+                </div>
+                <div class="cb">
+                    <div class="tl">
+                        {% for entry in entries %}
+                        <div class="ti">
+                            {% if entry.is_reviewed %}
+                            <div class="ti-dw"><div class="ti-d" style="background:#22C55E;"></div><div class="ti-ln"></div></div>
+                            {% else %}
+                            <div class="ti-dw"><div class="ti-d" style="background:#F59E0B;"></div><div class="ti-ln"></div></div>
+                            {% endif %}
+                            <div class="ti-b">
+                                <div class="ti-lbl">Week {{ entry.week_number }} {% if entry.is_reviewed %}reviewed{% else %}submitted{% endif %}</div>
+                                <div class="ti-sub">{{ entry.submitted_at|date:"d M Y" }}{% if entry.grade %} · Grade: {{ entry.grade }}{% endif %}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty"><i class="ti ti-clock" aria-hidden="true"></i>No activity yet.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="qa a5">
+            <a href="{% url 'submit_logbook' %}" class="qa-item">
+                <div class="qa-ico" style="background:#E5F4F2;"><i class="ti ti-file-plus" style="color:#157A73;" aria-hidden="true"></i></div>
+                <div><div class="qa-lbl">Submit entry</div><div class="qa-sub">Log this week</div></div>
+            </a>
+            <a href="{% url 'messaging:inbox' %}" class="qa-item">
+                <div class="qa-ico" style="background:#E0E7FF;"><i class="ti ti-message-dots" style="color:#4338CA;" aria-hidden="true"></i></div>
+                <div><div class="qa-lbl">Messages</div><div class="qa-sub">Chat with supervisor</div></div>
+            </a>
+            <a href="{% url 'upload_report' %}" class="qa-item">
+                <div class="qa-ico" style="background:#F0FDF4;"><i class="ti ti-file-text" style="color:#166534;" aria-hidden="true"></i></div>
+                <div><div class="qa-lbl">Upload report</div><div class="qa-sub">Submit your report</div></div>
+            </a>
+            <a href="{% url 'my_profile' %}" class="qa-item">
+                <div class="qa-ico" style="background:#FEF3C7;"><i class="ti ti-user-circle" style="color:#92400E;" aria-hidden="true"></i></div>
+                <div><div class="qa-lbl">My profile</div><div class="qa-sub">Edit your details</div></div>
+            </a>
+        </div>
+
+   {% elif request.user.role == 'supervisor' %}
+
+    {% if total_students == 0 %}
+
+    <div class="hero a2">
+        <div class="hero-l">
+            <div class="hero-tag"><i class="ti ti-briefcase" aria-hidden="true"></i> Supervisor Panel</div>
+            <h2>Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+            <p>Thanks for registering. Please await allocation of your students.</p>
+        </div>
+        <div class="hero-illo" aria-hidden="true"></div>
+    </div>
+
+    <div class="admin-card a3">
+        <i class="ti ti-hourglass-high" aria-hidden="true"></i>
+        <p>You haven't been allocated any students yet. Once the admin assigns students to you, they'll appear here along with their logbook submissions.</p>
+    </div>
+
+    {% else %}
+
+    <div class="hero a2">
+        <div class="hero-l">
+            <div class="hero-tag"><i class="ti ti-briefcase" aria-hidden="true"></i> Supervisor Panel</div>
+            <h2>Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+            <p>You have {{ pending_reviews }} logbook entr{{ pending_reviews|pluralize:"y,ies" }} waiting for review.</p>
+            <a href="{% url 'review_logbook_list' %}" class="hero-btn"><i class="ti ti-clipboard-check" aria-hidden="true"></i> Review Submissions</a>
+        </div>
+        <div class="hero-illo" aria-hidden="true"></div>
+    </div>
+
+    <div class="stats a3" style="grid-template-columns:repeat(3,1fr);">
+        <div class="sc">
+            <div class="sc-top"><div class="sc-ico" style="background:#E5F4F2;"><i class="ti ti-users" style="color:#157A73;" aria-hidden="true"></i></div></div>
+            <div class="sc-num">{{ total_students }}</div>
+            <div class="sc-lbl">Active students</div>
+        </div>
+        <div class="sc">
+            <div class="sc-top"><div class="sc-ico" style="background:#FEF3C7;"><i class="ti ti-clock" style="color:#92400E;" aria-hidden="true"></i></div></div>
+            <div class="sc-num">{{ pending_reviews }}</div>
+            <div class="sc-lbl">Pending review</div>
+        </div>
+        <div class="sc">
+            <div class="sc-top"><div class="sc-ico" style="background:#DCFCE7;"><i class="ti ti-circle-check" style="color:#166534;" aria-hidden="true"></i></div></div>
+            <div class="sc-num">{{ completed_reviews }}</div>
+            <div class="sc-lbl">Reviewed</div>
+        </div>
+    </div>
+
+    <div class="card a4">
+        <div class="ch">
+            <div class="ch-l">
+                <div class="ch-ico" style="background:#E5F4F2;"><i class="ti ti-notebook" style="color:#157A73;" aria-hidden="true"></i></div>
+                <span class="ch-title">Recent submissions</span>
+            </div>
+            <a href="{% url 'review_logbook_list' %}" class="ch-link">View all →</a>
+        </div>
+        <table class="sup-table">
+            <thead><tr><th>Student</th><th>Week</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+            {% for entry in recent_entries %}
+            <tr>
+                <td>{{ entry.student.username }}</td>
+                <td>Week {{ entry.week_number }}</td>
+                <td>{{ entry.submitted_at|date:"d M Y" }}</td>
+                <td>{% if entry.is_reviewed %}<span class="bx bx-ok">Reviewed</span>{% else %}<span class="bx bx-wait">Pending</span>{% endif %}</td>
+                <td><a href="{% url 'review_logbook_entry' entry.id %}" class="review-link">Review →</a></td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" style="text-align:center;color:#94A3B8;padding:30px;">No submissions yet.</td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% endif %}
+
+{% elif request.user.role == 'admin' %}
+
+        <div class="hero a2">
+            <div class="hero-l">
+                <div class="hero-tag"><i class="ti ti-settings" aria-hidden="true"></i> Administrator</div>
+                <h2>Welcome, {{ request.user.username }}!</h2>
+                <p>Manage the full SIWES system from the admin panel.</p>
+                <a href="/admin/" class="hero-btn"><i class="ti ti-settings" aria-hidden="true"></i> Open Admin Panel</a>
+            </div>
+            <div class="hero-illo" aria-hidden="true"></div>
+        </div>
+
+    {% endif %}
+
+    </div>
+</div>
+</body>
+</html>

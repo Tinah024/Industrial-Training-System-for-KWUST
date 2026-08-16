@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Logbook — SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#F4F8F7;min-height:100vh;display:flex;}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+        .a1{animation:slideIn .4s ease both}
+        .a2{animation:fadeUp .4s .08s ease both}
+
+        .sb{width:220px;background:#0A2E2F;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:10;}
+        .sb-top{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+        .sb-brand{display:flex;align-items:center;gap:10px;}
+        .sb-icon{width:36px;height:36px;border-radius:9px;background:#157A73;display:flex;align-items:center;justify-content:center;}
+        .sb-icon i{font-size:19px;color:#fff;}
+        .sb-name{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+        .sb-tagline{font-size:10px;color:rgba(255,255,255,.4);font-weight:400;}
+        .sb-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;}
+        .sb-av{width:32px;height:32px;border-radius:50%;background:#157A73;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+        .sb-uname{font-size:12px;font-weight:600;color:#fff;}
+        .sb-urole{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;}
+        .sb-nav{padding:12px 12px;flex:1;overflow:auto;}
+        .sb-sec{font-size:9px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 5px;}
+        .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;transition:background .15s;text-decoration:none;}
+        .ni:hover{background:rgba(255,255,255,.06);}
+        .ni.on{background:#157A73;}
+        .ni i{font-size:17px;color:rgba(255,255,255,.4);flex-shrink:0;}
+        .ni.on i{color:#fff;}
+        .ni-lbl{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);}
+        .ni.on .ni-lbl{color:#fff;}
+        .sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.07);}
+        .ni.out i{color:rgba(255,100,100,.45);}
+        .ni.out .ni-lbl{color:rgba(255,100,100,.55);}
+        .ni.out:hover{background:rgba(255,80,80,.08);}
+
+        .main{margin-left:220px;flex:1;}
+        .tbar{height:56px;background:#fff;border-bottom:1px solid #E5EEEC;display:flex;align-items:center;justify-content:space-between;padding:0 24px;}
+        .tbar-l{font-size:15px;font-weight:600;color:#0A2E2F;}
+        .tbar-sub{font-size:12px;color:#7A9290;font-weight:400;margin-left:6px;}
+        .back-link{display:flex;align-items:center;gap:6px;color:#5B7674;text-decoration:none;font-size:13px;}
+        .back-link i{font-size:16px;}
+
+        .body{padding:24px;max-width:900px;}
+        .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+        .page-head h2{font-size:20px;font-weight:700;color:#0A2E2F;margin-bottom:4px;}
+        .page-head p{font-size:13px;color:#7A9290;}
+        .add-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;background:#157A73;color:#fff;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;transition:background .15s;}
+        .add-btn:hover{background:#1A8F87;}
+
+        .card{background:#fff;border:1px solid #E5EEEC;border-radius:14px;overflow:hidden;}
+        table{width:100%;border-collapse:collapse;}
+        th{text-align:left;font-size:10.5px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;padding:14px 16px 10px;}
+        td{padding:13px 16px;border-top:1px solid #F0F6F5;font-size:13px;color:#1E293B;}
+        tr:hover td{background:#F8FBFA;}
+        .badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:99px;}
+        .b-reviewed{background:#DCFCE7;color:#166534;}
+        .b-pending{background:#FEF3C7;color:#92400E;}
+        .empty-state{text-align:center;padding:50px 20px;color:#94A3B8;}
+        .empty-state i{font-size:38px;display:block;margin-bottom:10px;}
+    </style>
+</head>
+<body>
+
+<nav class="sb a1">
+    <div class="sb-top">
+        <div class="sb-brand">
+            <div class="sb-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
+            <div><div class="sb-name">KWUST</div><div class="sb-tagline">SIWES Monitor</div></div>
+        </div>
+    </div>
+    <div class="sb-user">
+        <div class="sb-av">{{ request.user.username|slice:":2"|upper }}</div>
+        <div>
+            <div class="sb-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="sb-urole">{{ request.user.role }}</div>
+        </div>
+    </div>
+    <div class="sb-nav">
+        <div class="sb-sec">Main</div>
+        <a href="{% url 'dashboard' %}" class="ni"><i class="ti ti-layout-dashboard" aria-hidden="true"></i><span class="ni-lbl">Dashboard</span></a>
+        <a href="{% url 'my_logbook' %}" class="ni on"><i class="ti ti-notebook" aria-hidden="true"></i><span class="ni-lbl">My Logbook</span></a>
+        <a href="{% url 'submit_logbook' %}" class="ni"><i class="ti ti-file-plus" aria-hidden="true"></i><span class="ni-lbl">Submit Entry</span></a>
+        <div class="sb-sec">Communication</div>
+        <a href="#" class="ni"><i class="ti ti-message-dots" aria-hidden="true"></i><span class="ni-lbl">Messages</span></a>
+        <a href="#" class="ni"><i class="ti ti-bell" aria-hidden="true"></i><span class="ni-lbl">Notifications</span></a>
+        <div class="sb-sec">Account</div>
+        <a href="#" class="ni"><i class="ti ti-user-circle" aria-hidden="true"></i><span class="ni-lbl">My Profile</span></a>
+    </div>
+    <div class="sb-foot">
+        <a href="{% url 'logout' %}" class="ni out"><i class="ti ti-logout" aria-hidden="true"></i><span class="ni-lbl">Logout</span></a>
+    </div>
+</nav>
+
+<div class="main">
+    <div class="tbar a2">
+        <div><span class="tbar-l">My Logbook Entries</span><span class="tbar-sub">· KWUST SIWES System</span></div>
+        <a href="{% url 'dashboard' %}" class="back-link"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to Dashboard</a>
+    </div>
+
+    <div class="body a2">
+        <div class="page-head">
+            <div>
+                <h2>Weekly Submissions</h2>
+                <p>All your submitted logbook entries and their review status.</p>
+            </div>
+            <a href="{% url 'submit_logbook' %}" class="add-btn"><i class="ti ti-plus" aria-hidden="true"></i> New Entry</a>
+        </div>
+
+        <div class="card">
+            {% if entries %}
+            <table>
+                <tr><th>Week</th><th>Activities</th><th>Submitted</th><th>Status</th><th>Grade</th></tr>
+                {% for entry in entries %}
+                <tr>
+                    <td>Week {{ entry.week_number }}</td>
+                    <td>{{ entry.activities|truncatewords:15 }}</td>
+                    <td>{{ entry.submitted_at|date:"d M Y, H:i" }}</td>
+                    <td>{% if entry.is_reviewed %}<span class="badge b-reviewed">Reviewed</span>{% else %}<span class="badge b-pending">Pending</span>{% endif %}</td>
+                    <td>{{ entry.grade|default:"—" }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="ti ti-notebook-off" aria-hidden="true"></i>
+                You haven't submitted any logbook entries yet.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

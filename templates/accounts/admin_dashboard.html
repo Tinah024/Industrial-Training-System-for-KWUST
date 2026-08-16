@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html,body{height:100%;font-family:'Inter',sans-serif;background:#F4F8F7;}
+        body{display:flex;min-height:100vh;}
+
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes slideIn{from{opacity:0;transform:translateX(-16px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+        .a1{animation:slideIn .4s ease both}
+        .a2{animation:fadeUp .4s .05s ease both}
+        .a3{animation:fadeUp .4s .12s ease both}
+        .a4{animation:fadeUp .4s .20s ease both}
+        .a5{animation:fadeUp .4s .28s ease both}
+
+        /* ── SIDEBAR ── */
+        .sb{width:220px;background:#0A2E2F;display:flex;flex-direction:column;flex-shrink:0;position:fixed;top:0;left:0;height:100vh;z-index:10;}
+        .sb-top{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07);}
+        .sb-brand{display:flex;align-items:center;gap:10px;}
+        .sb-icon{width:36px;height:36px;border-radius:9px;background:#157A73;display:flex;align-items:center;justify-content:center;}
+        .sb-icon i{font-size:19px;color:#fff;}
+        .sb-name{font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+        .sb-tagline{font-size:10px;color:rgba(255,255,255,.4);}
+        .sb-user{padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:10px;}
+        .sb-av{width:32px;height:32px;border-radius:50%;background:#E24B4A;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+        .sb-uname{font-size:12px;font-weight:600;color:#fff;}
+        .sb-urole{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.06em;}
+        .sb-nav{padding:12px;flex:1;overflow:auto;}
+        .sb-sec{font-size:9px;font-weight:700;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.1em;padding:10px 8px 5px;}
+        .ni{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;transition:background .15s;text-decoration:none;}
+        .ni:hover{background:rgba(255,255,255,.06);}
+        .ni.on{background:#157A73;}
+        .ni i{font-size:17px;color:rgba(255,255,255,.4);flex-shrink:0;}
+        .ni.on i,.ni:hover i{color:#fff;}
+        .ni-lbl{font-size:12px;font-weight:500;color:rgba(255,255,255,.5);}
+        .ni.on .ni-lbl,.ni:hover .ni-lbl{color:#fff;}
+        .sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,.07);}
+        .ni.out i{color:rgba(255,100,100,.5);}
+        .ni.out .ni-lbl{color:rgba(255,100,100,.6);}
+        .ni.out:hover{background:rgba(255,80,80,.08);}
+
+        /* ── MAIN ── */
+        .main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-width:0;}
+        .tbar{height:56px;background:#fff;border-bottom:1px solid #E5EEEC;display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0;}
+        .tbar-l{font-size:15px;font-weight:600;color:#0A2E2F;}
+        .tbar-sub{font-size:12px;color:#7A9290;font-weight:400;margin-left:6px;}
+        .tbar-r{display:flex;align-items:center;gap:8px;}
+        .av{width:34px;height:34px;border-radius:50%;background:#E24B4A;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;}
+
+        /* ── CONTENT ── */
+        .pg{padding:22px 26px;flex:1;}
+
+        /* ── HERO ── */
+        .hero{background:#0A2E2F;border-radius:16px;padding:26px 30px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(21,122,115,.35);top:-100px;right:60px;pointer-events:none;}
+        .hero::after{content:'';position:absolute;width:180px;height:180px;border-radius:50%;background:rgba(21,122,115,.2);bottom:-60px;right:180px;pointer-events:none;}
+        .hero-l{position:relative;z-index:1;}
+        .hero-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.08);border-radius:99px;padding:4px 12px;font-size:10px;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;}
+        .hero-tag i{font-size:12px;}
+        .hero-l h2{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;}
+        .hero-l p{font-size:13px;color:rgba(255,255,255,.5);margin-bottom:18px;max-width:420px;line-height:1.5;}
+        .hero-btns{display:flex;gap:10px;flex-wrap:wrap;}
+        .hero-btn{display:inline-flex;align-items:center;gap:7px;background:#157A73;color:#fff;font-size:12px;font-weight:600;padding:9px 16px;border-radius:8px;border:none;cursor:pointer;text-decoration:none;transition:background .15s;font-family:'Inter',sans-serif;}
+        .hero-btn:hover{background:#1A8F87;}
+        .hero-btn.outline{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);}
+        .hero-btn.outline:hover{background:rgba(255,255,255,.14);}
+        .hero-btn i{font-size:14px;}
+        .hero-illo{font-size:72px;position:relative;z-index:1;animation:float 3.5s ease-in-out infinite;line-height:1;flex-shrink:0;}
+
+        /* ── STATS ROW ── */
+        .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px;}
+        .sc{background:#fff;border:1px solid #E5EEEC;border-radius:13px;padding:16px 18px;transition:transform .2s,box-shadow .2s;}
+        .sc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(10,46,47,.08);}
+        .sc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+        .sc-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;}
+        .sc-ico i{font-size:17px;}
+        .sc-pill{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;}
+        .sc-num{font-size:26px;font-weight:700;color:#0A2E2F;margin-bottom:3px;line-height:1;}
+        .sc-lbl{font-size:11px;color:#7A9290;}
+        .sc-bar{height:3px;background:#EEF4F3;border-radius:99px;margin-top:12px;overflow:hidden;}
+        .sc-fill{height:100%;border-radius:99px;transition:width 1.2s .3s ease;}
+
+        /* ── CHART ROW ── */
+        .chart-row{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:20px;}
+        .card{background:#fff;border:1px solid #E5EEEC;border-radius:13px;overflow:hidden;}
+        .ch{padding:14px 18px;border-bottom:1px solid #F0F6F5;display:flex;align-items:center;justify-content:space-between;}
+        .ch-l{display:flex;align-items:center;gap:9px;}
+        .ch-ico{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;}
+        .ch-ico i{font-size:14px;}
+        .ch-title{font-size:13px;font-weight:600;color:#0A2E2F;}
+        .ch-sub{font-size:11px;color:#94A3B8;}
+        .cb{padding:18px;}
+        .chart-wrap{position:relative;height:200px;}
+        .donut-wrap{position:relative;height:200px;display:flex;align-items:center;justify-content:center;}
+        .donut-center{position:absolute;text-align:center;pointer-events:none;}
+        .donut-num{font-size:28px;font-weight:700;color:#0A2E2F;line-height:1;}
+        .donut-lbl{font-size:11px;color:#7A9290;margin-top:3px;}
+        .legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+        .leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:#5B7674;}
+        .leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+        /* ── BOTTOM GRID ── */
+        .bottom-grid{display:grid;grid-template-columns:3fr 2fr;gap:14px;}
+
+        /* ── TABS ── */
+        .tabs{display:flex;gap:4px;padding:12px 18px;border-bottom:1px solid #F0F6F5;}
+        .tab{padding:6px 14px;border-radius:7px;font-size:11px;font-weight:600;color:#7A9290;cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;transition:all .15s;}
+        .tab.on{background:#0A2E2F;color:#fff;}
+        .tab:hover:not(.on){background:#F4F8F7;color:#0A2E2F;}
+        .panel{display:none;}
+        .panel.on{display:block;}
+
+        /* ── SEARCH ── */
+        .search-wrap{padding:10px 18px;border-bottom:1px solid #F0F6F5;}
+        .search-in{position:relative;}
+        .search-in i{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;color:#94A3B8;}
+        .search-in input{width:100%;max-width:280px;padding:7px 12px 7px 30px;border:1px solid #E5EEEC;border-radius:7px;font-size:12px;font-family:'Inter',sans-serif;color:#1E293B;}
+        .search-in input:focus{outline:none;border-color:#157A73;}
+
+        /* ── TABLE ── */
+        .dt{width:100%;border-collapse:collapse;}
+        .dt th{text-align:left;font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.05em;padding:9px 18px;}
+        .dt td{padding:11px 18px;border-top:1px solid #F0F6F5;font-size:12px;color:#1E293B;vertical-align:middle;}
+        .dt tr:hover td{background:#F8FBFA;}
+        .u-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
+        .bx{font-size:10px;font-weight:700;padding:3px 8px;border-radius:99px;display:inline-block;}
+        .bx-student{background:#E5F4F2;color:#157A73;}
+        .bx-supervisor{background:#E0E7FF;color:#4338CA;}
+        .bx-ok{background:#DCFCE7;color:#166534;}
+        .bx-wait{background:#FEF3C7;color:#92400E;}
+        .btn-del{background:none;border:1px solid #FEE2E2;color:#B91C1C;font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;display:inline-flex;align-items:center;gap:4px;}
+        .btn-del:hover{background:#FEF2F2;}
+        .btn-del i{font-size:12px;}
+
+        /* ── ACTIVITY FEED ── */
+        .fi{display:flex;align-items:flex-start;gap:11px;padding:12px 18px;border-bottom:1px solid #F8FBFA;}
+        .fi:last-child{border:none;}
+        .fi-av{width:30px;height:30px;border-radius:50%;background:#157A73;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;}
+        .fi-b{flex:1;min-width:0;}
+        .fi-lbl{font-size:12px;font-weight:500;color:#1E293B;line-height:1.4;}
+        .fi-sub{font-size:10px;color:#94A3B8;margin-top:2px;}
+        .fi-pill{flex-shrink:0;}
+        .empty{text-align:center;padding:36px;color:#94A3B8;font-size:13px;}
+        .empty i{font-size:32px;display:block;margin-bottom:8px;}
+
+        /* ── QUICK LINKS ── */
+        .ql{display:flex;flex-direction:column;gap:8px;padding:14px 18px;}
+        .ql-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid #E5EEEC;border-radius:10px;text-decoration:none;transition:all .15s;}
+        .ql-item:hover{border-color:#7FC2BC;background:#F4F8F7;}
+        .ql-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+        .ql-ico i{font-size:16px;}
+        .ql-lbl{font-size:12px;font-weight:600;color:#0A2E2F;}
+        .ql-sub{font-size:10px;color:#94A3B8;margin-top:1px;}
+        .ql-arr{margin-left:auto;color:#CBD5E1;font-size:14px;}
+
+        /* ── MODAL ── */
+        .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;align-items:center;justify-content:center;}
+        .modal-bg.show{display:flex;}
+        .modal{background:#fff;border-radius:16px;padding:30px;width:100%;max-width:360px;box-shadow:0 24px 60px rgba(0,0,0,.2);}
+        .modal-icon{width:50px;height:50px;border-radius:13px;background:#FEF2F2;display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+        .modal-icon i{font-size:24px;color:#B91C1C;}
+        .modal h3{font-size:16px;font-weight:700;color:#0A2E2F;margin-bottom:7px;}
+        .modal p{font-size:13px;color:#7A9290;margin-bottom:22px;line-height:1.55;}
+        .modal-actions{display:flex;gap:9px;}
+        .btn-cancel{flex:1;padding:10px;border:1px solid #E5EEEC;background:#fff;border-radius:9px;font-size:13px;font-weight:600;color:#5B7674;cursor:pointer;font-family:'Inter',sans-serif;}
+        .btn-cancel:hover{background:#F4F8F7;}
+        .btn-confirm-del{flex:1;padding:10px;border:none;background:#B91C1C;border-radius:9px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:'Inter',sans-serif;}
+        .btn-confirm-del:hover{background:#991B1B;}
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sb a1">
+    <div class="sb-top">
+        <div class="sb-brand">
+            <div class="sb-icon"><i class="ti ti-school"></i></div>
+            <div><div class="sb-name">KWUST</div><div class="sb-tagline">Industrial Training Monitor</div></div>
+        </div>
+    </div>
+    <div class="sb-user">
+        <div class="sb-av">{{ request.user.username|slice:":2"|upper }}</div>
+        <div>
+            <div class="sb-uname">{{ request.user.get_full_name|default:request.user.username }}</div>
+            <div class="sb-urole">Administrator</div>
+        </div>
+    </div>
+    <div class="sb-nav">
+        <div class="sb-sec">Main</div>
+        <a href="{% url 'admin_dashboard' %}" class="ni on"><i class="ti ti-layout-dashboard"></i><span class="ni-lbl">Dashboard</span></a>
+        <div class="sb-sec">Management</div>
+        <a href="#" onclick="switchTab('users');scrollToTabs();return false;" class="ni"><i class="ti ti-users"></i><span class="ni-lbl">Manage Users</span></a>
+        <a href="#" onclick="switchTab('logbook');scrollToTabs();return false;" class="ni"><i class="ti ti-notebook"></i><span class="ni-lbl">Logbook Entries</span></a>
+        <a href="#" onclick="switchTab('activity');scrollToTabs();return false;" class="ni"><i class="ti ti-activity"></i><span class="ni-lbl">Activity Feed</span></a>
+        <!-- ← NEW -->
+        <a href="{% url 'assign_supervisors' %}" class="ni"><i class="ti ti-users-group"></i><span class="ni-lbl">Assign Supervisors</span></a>
+        <div class="sb-sec">System</div>
+        <a href="/admin/" class="ni"><i class="ti ti-settings"></i><span class="ni-lbl">Django Admin</span></a>
+    </div>
+    <div class="sb-foot">
+        <a href="{% url 'logout' %}" class="ni out"><i class="ti ti-logout"></i><span class="ni-lbl">Logout</span></a>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+    <div class="tbar a2">
+        <div>
+            <span class="tbar-l">Admin Dashboard</span>
+            <span class="tbar-sub">· KWUST Industrial Training System</span>
+        </div>
+        <div class="tbar-r">
+            <div class="av">{{ request.user.username|slice:":2"|upper }}</div>
+        </div>
+    </div>
+
+    <div class="pg">
+
+        <!-- HERO -->
+        <div class="hero a2">
+            <div class="hero-l">
+                <div class="hero-tag"><i class="ti ti-shield-check"></i> Administrator Panel</div>
+                <h2>Welcome back, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+                <p>Here's a full overview of the KWUST Industrial Training system users, logbook activity, and completion progress.</p>
+                <div class="hero-btns">
+                    <a href="#" onclick="switchTab('users');scrollToTabs();return false;" class="hero-btn"><i class="ti ti-users"></i> Manage Users</a>
+                    <a href="{% url 'create_supervisor' %}" class="hero-btn"><i class="ti ti-user-plus"></i> Create Supervisor</a>
+                    <!-- ← NEW -->
+                    <a href="{% url 'assign_supervisors' %}" class="hero-btn outline"><i class="ti ti-users-group"></i> Assign Supervisors</a>
+                    <a href="/admin/" class="hero-btn outline"><i class="ti ti-settings"></i> Django Admin</a>
+                    <a href="{% url 'message_oversight' %}" class="ni"><i class="ti ti-eye"></i><span class="ni-lbl">Message Oversight</span></a>
+                    <a href="{% url 'message_oversight' %}" class="ql-item">
+    <div class="ql-ico" style="background:#FEF3C7;"><i class="ti ti-eye" style="color:#92400E;"></i></div>
+    <div><div class="ql-lbl">Message oversight</div><div class="ql-sub">Monitor student-supervisor chats</div></div>
+    <i class="ti ti-chevron-right ql-arr"></i>
+</a>
+                </div>
+            </div>
+            <div class="hero-illo"></div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="stats a3">
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#E5F4F2;"><i class="ti ti-users" style="color:#157A73;"></i></div>
+                    <span class="sc-pill" style="background:#E5F4F2;color:#157A73;">students</span>
+                </div>
+                <div class="sc-num">{{ total_students }}</div>
+                <div class="sc-lbl">Total students</div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#E0E7FF;"><i class="ti ti-user-check" style="color:#4338CA;"></i></div>
+                    <span class="sc-pill" style="background:#E0E7FF;color:#4338CA;">supervisors</span>
+                </div>
+                <div class="sc-num">{{ total_supervisors }}</div>
+                <div class="sc-lbl">Total supervisors</div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#F0FDF4;"><i class="ti ti-notebook" style="color:#166534;"></i></div>
+                    <span class="sc-pill" style="background:#F0FDF4;color:#166534;">entries</span>
+                </div>
+                <div class="sc-num">{{ total_entries }}</div>
+                <div class="sc-lbl">Logbook entries</div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#FEF3C7;"><i class="ti ti-clock" style="color:#92400E;"></i></div>
+                    <span class="sc-pill" style="background:#FEF3C7;color:#92400E;">pending</span>
+                </div>
+                <div class="sc-num">{{ pending_reviews }}</div>
+                <div class="sc-lbl">Pending reviews</div>
+            </div>
+            <div class="sc">
+                <div class="sc-top">
+                    <div class="sc-ico" style="background:#EDE9FE;"><i class="ti ti-chart-pie" style="color:#6D28D9;"></i></div>
+                    <span class="sc-pill" style="background:#EDE9FE;color:#6D28D9;">overall</span>
+                </div>
+                <div class="sc-num">{{ completion_rate }}%</div>
+                <div class="sc-lbl">Completion rate</div>
+                <div class="sc-bar"><div class="sc-fill" id="completion-bar" style="background:#6D28D9;width:0%;"></div></div>
+            </div>
+        </div>
+
+        <!-- CHART ROW -->
+        <div class="chart-row a4">
+            <div class="card">
+                <div class="ch">
+                    <div class="ch-l">
+                        <div class="ch-ico" style="background:#E5F4F2;"><i class="ti ti-chart-bar" style="color:#157A73;"></i></div>
+                        <div>
+                            <div class="ch-title">Logbook Submissions Overview</div>
+                            <div class="ch-sub">Reviewed vs pending across all entries</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cb">
+                    <div class="chart-wrap"><canvas id="submissionsChart"></canvas></div>
+                    <div class="legend">
+                        <div class="leg-item"><div class="leg-dot" style="background:#157A73;"></div>Reviewed</div>
+                        <div class="leg-item"><div class="leg-dot" style="background:#F59E0B;"></div>Pending</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="ch">
+                    <div class="ch-l">
+                        <div class="ch-ico" style="background:#EDE9FE;"><i class="ti ti-chart-donut" style="color:#6D28D9;"></i></div>
+                        <div>
+                            <div class="ch-title">System Completion</div>
+                            <div class="ch-sub">Of total 12-week capacity</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cb">
+                    <div class="donut-wrap">
+                        <canvas id="completionChart"></canvas>
+                        <div class="donut-center">
+                            <div class="donut-num">{{ completion_rate }}%</div>
+                            <div class="donut-lbl">Complete</div>
+                        </div>
+                    </div>
+                    <div class="legend" style="justify-content:center;">
+                        <div class="leg-item"><div class="leg-dot" style="background:#157A73;"></div>Submitted</div>
+                        <div class="leg-item"><div class="leg-dot" style="background:#E5EEEC;"></div>Remaining</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM GRID -->
+        <div class="bottom-grid a5" id="tabs-section">
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab on" id="tab-users" onclick="switchTab('users')">
+                        <i class="ti ti-users"></i> Users ({{ all_users|length }})
+                    </button>
+                    <button class="tab" id="tab-logbook" onclick="switchTab('logbook')">
+                        <i class="ti ti-notebook"></i> Logbook ({{ total_entries }})
+                    </button>
+                    <button class="tab" id="tab-activity" onclick="switchTab('activity')">
+                        <i class="ti ti-activity"></i> Activity
+                    </button>
+                </div>
+
+                <!-- Users panel -->
+                <div class="panel on" id="panel-users">
+                    <div class="search-wrap">
+                        <div class="search-in">
+                            <i class="ti ti-search"></i>
+                            <input type="text" placeholder="Search users..." oninput="filterTable('user-table',this.value)">
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="dt" id="user-table">
+                            <thead><tr><th>User</th><th>Role</th><th>Joined</th><th></th></tr></thead>
+                            <tbody>
+                                {% for user in all_users %}
+                                <tr>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:9px;">
+                                            <div class="u-av {% if user.role == 'student' %}u-av-student{% else %}u-av-supervisor{% endif %}">
+                                                {{ user.username|slice:":2"|upper }}
+                                            </div>
+                                            <div>
+                                                <div style="font-weight:600;font-size:12px;">{{ user.get_full_name|default:user.username }}</div>
+                                                <div style="font-size:10px;color:#94A3B8;">{{ user.email|default:"No email" }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="bx {% if user.role == 'student' %}bx-student{% else %}bx-supervisor{% endif %}">{{ user.role }}</span></td>
+                                    <td style="color:#94A3B8;font-size:11px;">{{ user.date_joined|date:"d M Y" }}</td>
+                                    <td>
+                                        <button class="btn-del" onclick="confirmDelete('{{ user.id }}','{{ user.username }}')">
+                                            <i class="ti ti-trash"></i> Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="4"><div class="empty"><i class="ti ti-users-off"></i>No users registered yet.</div></td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Logbook panel -->
+                <div class="panel" id="panel-logbook">
+                    <div class="search-wrap">
+                        <div class="search-in">
+                            <i class="ti ti-search"></i>
+                            <input type="text" placeholder="Search entries..." oninput="filterTable('logbook-table',this.value)">
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="dt" id="logbook-table">
+                            <thead><tr><th>Student</th><th>Week</th><th>Submitted</th><th>Status</th><th>Grade</th></tr></thead>
+                            <tbody>
+                                {% for entry in all_entries %}
+                                <tr>
+                                    <td>
+                                        <div style="display:flex;align-items:center;gap:8px;">
+                                            <div class="u-av" style="background:#157A73;font-size:9px;">{{ entry.student.username|slice:":2"|upper }}</div>
+                                            {{ entry.student.username }}
+                                        </div>
+                                    </td>
+                                    <td style="font-weight:600;">Wk {{ entry.week_number }}</td>
+                                    <td style="color:#94A3B8;font-size:11px;">{{ entry.submitted_at|date:"d M Y" }}</td>
+                                    <td>{% if entry.is_reviewed %}<span class="bx bx-ok">Reviewed</span>{% else %}<span class="bx bx-wait">Pending</span>{% endif %}</td>
+                                    <td style="font-weight:700;color:#157A73;">{% if entry.grade %}{{ entry.grade }}{% else %}—{% endif %}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="5"><div class="empty"><i class="ti ti-notebook-off"></i>No entries yet.</div></td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Activity panel -->
+                <div class="panel" id="panel-activity">
+                    {% for entry in recent_entries %}
+                    <div class="fi">
+                        <div class="fi-av">{{ entry.student.username|slice:":2"|upper }}</div>
+                        <div class="fi-b">
+                            <div class="fi-lbl">
+                                <strong>{{ entry.student.username }}</strong>
+                                {% if entry.is_reviewed %} — Week {{ entry.week_number }} reviewed{% else %} — Submitted Week {{ entry.week_number }}{% endif %}
+                                {% if entry.grade %} · <span style="color:#157A73;font-weight:700;">{{ entry.grade }}</span>{% endif %}
+                            </div>
+                            <div class="fi-sub">{{ entry.submitted_at|date:"d M Y, H:i" }}</div>
+                        </div>
+                        <div class="fi-pill">
+                            {% if entry.is_reviewed %}<span class="bx bx-ok">Done</span>{% else %}<span class="bx bx-wait">Pending</span>{% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="empty"><i class="ti ti-clock-off"></i>No activity yet.</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- RIGHT: quick links -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+                <div class="card">
+                    <div class="ch">
+                        <div class="ch-l">
+                            <div class="ch-ico" style="background:#E5F4F2;"><i class="ti ti-bolt" style="color:#157A73;"></i></div>
+                            <span class="ch-title">Quick Actions</span>
+                        </div>
+                    </div>
+                    <div class="ql">
+                        <a href="{% url 'create_supervisor' %}" class="ql-item">
+                         <div class="ql-ico" style="background:#E5F4F2;"><i class="ti ti-user-plus" style="color:#157A73;"></i></div>
+                            <div><div class="ql-lbl">Create supervisor account</div><div class="ql-sub">Only path to create a supervisor</div></div>
+                                <i class="ti ti-chevron-right ql-arr"></i>
+                                    </a>
+                        <!-- ← NEW -->
+                        <a href="{% url 'assign_supervisors' %}" class="ql-item">
+                            <div class="ql-ico" style="background:#E0E7FF;"><i class="ti ti-users-group" style="color:#4338CA;"></i></div>
+                            <div><div class="ql-lbl">Assign supervisors</div><div class="ql-sub">Link students to supervisors</div></div>
+                            <i class="ti ti-chevron-right ql-arr"></i>
+                        </a>
+                        <a href="/admin/logbook/logbookentry/" class="ql-item">
+                            <div class="ql-ico" style="background:#F0FDF4;"><i class="ti ti-notebook" style="color:#166634;"></i></div>
+                            <div><div class="ql-lbl">View all entries</div><div class="ql-sub">Full logbook in admin</div></div>
+                            <i class="ti ti-chevron-right ql-arr"></i>
+                        </a>
+                        <a href="/admin/" class="ql-item">
+                            <div class="ql-ico" style="background:#EDE9FE;"><i class="ti ti-settings" style="color:#6D28D9;"></i></div>
+                            <div><div class="ql-lbl">Django admin panel</div><div class="ql-sub">Full system settings</div></div>
+                            <i class="ti ti-chevron-right ql-arr"></i>
+                        </a>
+                        <a href="{% url 'notifications' %}" class="ql-item">
+                            <div class="ql-ico" style="background:#FEF3C7;"><i class="ti ti-bell" style="color:#92400E;"></i></div>
+                            <div><div class="ql-lbl">Notifications</div><div class="ql-sub">System alerts</div></div>
+                            <i class="ti ti-chevron-right ql-arr"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Summary card -->
+                <div class="card">
+                    <div class="ch">
+                        <div class="ch-l">
+                            <div class="ch-ico" style="background:#E0E7FF;"><i class="ti ti-clipboard-data" style="color:#4338CA;"></i></div>
+                            <span class="ch-title">System Summary</span>
+                        </div>
+                    </div>
+                    <div class="cb" style="display:flex;flex-direction:column;gap:12px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #F0F6F5;">
+                            <span style="font-size:12px;color:#5B7674;">Total users</span>
+                            <span style="font-size:14px;font-weight:700;color:#0A2E2F;">{{ all_users|length }}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #F0F6F5;">
+                            <span style="font-size:12px;color:#5B7674;">Reviewed entries</span>
+                            <span style="font-size:14px;font-weight:700;color:#166534;">{{ total_entries|add:"-"|add:pending_reviews }}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;border-bottom:1px solid #F0F6F5;">
+                            <span style="font-size:12px;color:#5B7674;">Pending reviews</span>
+                            <span style="font-size:14px;font-weight:700;color:#92400E;">{{ pending_reviews }}</span>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;">
+                            <span style="font-size:12px;color:#5B7674;">Completion rate</span>
+                            <span style="font-size:14px;font-weight:700;color:#6D28D9;">{{ completion_rate }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- DELETE MODAL -->
+<div class="modal-bg" id="delete-modal">
+    <div class="modal">
+        <div class="modal-icon"><i class="ti ti-trash"></i></div>
+        <h3>Delete user?</h3>
+        <p>You are about to delete <strong id="modal-username"></strong>. This will permanently remove their account and all associated data. This cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <form id="delete-form" method="POST" action="" style="flex:1;">
+                {% csrf_token %}
+                <button type="submit" class="btn-confirm-del" style="width:100%;">Yes, delete</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function switchTab(name) {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+        document.getElementById('tab-' + name).classList.add('on');
+        document.getElementById('panel-' + name).classList.add('on');
+    }
+    function scrollToTabs() {
+        setTimeout(() => {
+            document.getElementById('tabs-section').scrollIntoView({behavior:'smooth',block:'start'});
+        }, 50);
+    }
+    function filterTable(id, q) {
+        document.querySelectorAll('#' + id + ' tbody tr').forEach(r => {
+            r.style.display = r.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+        });
+    }
+    function confirmDelete(id, name) {
+        document.getElementById('modal-username').textContent = name;
+        document.getElementById('delete-form').action = '/accounts/delete-user/' + id + '/';
+        document.getElementById('delete-modal').classList.add('show');
+    }
+    function closeModal() {
+        document.getElementById('delete-modal').classList.remove('show');
+    }
+    document.getElementById('delete-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    window.addEventListener('load', function() {
+        setTimeout(() => {
+            document.getElementById('completion-bar').style.width = '{{ completion_rate }}%';
+        }, 300);
+    });
+
+   const dashboardData  = document.getElementById('dashboard-data').dataset;
+const totalEntries   = parseInt(dashboardData.totalEntries, 10);
+const pendingReviews = parseInt(dashboardData.pendingReviews, 10);
+const totalStudents  = parseInt(dashboardData.totalStudents, 10);
+
+const reviewed  = totalEntries - pendingReviews;
+const pending   = pendingReviews;
+const remaining = Math.max(0, (totalStudents * 12) - totalEntries);
+
+    new Chart(document.getElementById('submissionsChart'), {
+        type: 'bar',
+        data: {
+            labels: ['Reviewed', 'Pending'],
+            datasets: [{
+                data: [reviewed, pending],
+                backgroundColor: ['#157A73', '#F59E0B'],
+                borderRadius: 7,
+                borderSkipped: false,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: '#F0F6F5' }, ticks: { font: { family: 'Inter', size: 11 }, color: '#94A3B8' } },
+                x: { grid: { display: false }, ticks: { font: { family: 'Inter', size: 11 }, color: '#94A3B8' } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('completionChart'), {
+        type: 'doughnut',
+        data: {
+            datasets: [{
+                data: [totalEntries, remaining],
+                backgroundColor: ['#157A73', '#E5EEEC'],
+                borderWidth: 0,
+                hoverOffset: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '72%',
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+
+</body>
+</html>

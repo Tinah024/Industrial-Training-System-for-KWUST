@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .msglist-wrap{max-width:600px;margin:28px auto;font-family:'Inter',sans-serif;padding:0 16px;}
+    .msglist-head{font-size:18px;font-weight:700;color:#0A2E2F;margin-bottom:16px;}
+    .message-row{
+        display:flex;align-items:center;gap:14px;
+        background:#fff;border:1px solid #E5EEEC;border-radius:12px;
+        padding:14px 16px;margin-bottom:10px;
+        text-decoration:none;color:inherit;
+        transition:border-color .15s ease;
+    }
+    .message-row:hover{border-color:#157A73;}
+    .student-info{display:flex;flex-direction:column;min-width:130px;}
+    .student-info strong{font-size:14px;color:#0A2E2F;}
+    .student-info .reg{font-size:11px;color:#7C9491;margin-top:2px;}
+    .preview{flex:1;font-size:13px;color:#4B6664;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .preview em{color:#94A3B8;font-style:normal;}
+    .unread-badge{
+        background:#157A73;color:#fff;font-size:11px;font-weight:700;
+        min-width:20px;height:20px;border-radius:10px;
+        display:flex;align-items:center;justify-content:center;padding:0 6px;
+        flex-shrink:0;
+    }
+    .empty{color:#94A3B8;font-size:13px;text-align:center;padding:30px 0;}
+</style>
+<div class="msglist-wrap">
+    <div class="msglist-head">Messages</div>
+    {% for item in student_data %}
+        <a href="{% url 'message_thread' item.student.user.id %}" class="message-row">
+            <div class="student-info">
+                <strong>{{ item.student.user.get_full_name }}</strong>
+                <span class="reg">{{ item.student.registration_number }}</span>
+            </div>
+            <div class="preview">
+                {% if item.last_message %}
+                    {{ item.last_message.body|truncatechars:50 }}
+                {% else %}
+                    <em>No messages yet — start a conversation</em>
+                {% endif %}
+            </div>
+            {% if item.unread_count %}
+                <span class="unread-badge">{{ item.unread_count }}</span>
+            {% endif %}
+        </a>
+    {% empty %}
+        <div class="empty">No assigned students yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

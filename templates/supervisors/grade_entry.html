@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Entry - SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #F4F8F7; padding: 32px; color: #0A2E2F; }
+
+        .header {
+            background: #0A2E2F;
+            color: white;
+            padding: 24px 28px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(21,122,115,.4);
+            top: -70px; right: 10%;
+        }
+        .header-l { position: relative; z-index: 1; }
+        .header h1 { font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+        .header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+        .back-link {
+            position: relative; z-index: 1;
+            color: rgba(255,255,255,.75);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .back-link:hover { color: #fff; }
+
+        .card {
+            background: #fff;
+            border: 1px solid #E5EEEC;
+            border-radius: 14px;
+            padding: 26px 28px;
+            margin-top: 18px;
+            max-width: 650px;
+        }
+        .card h2 { font-size: 17px; font-weight: 700; color: #0A2E2F; margin-bottom: 18px; }
+        .card h3 { font-size: 12px; font-weight: 700; color: #157A73; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+
+        .detail {
+            background: #F8FBFA;
+            border: 1px solid #F0F6F5;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #1E293B;
+            white-space: pre-wrap;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #0A2E2F;
+            font-size: 12px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border: 1px solid #DCE8E6;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #0A2E2F;
+            background: #FBFEFD;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #157A73;
+            box-shadow: 0 0 0 3px rgba(21,122,115,.12);
+        }
+
+        button {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 22px;
+            margin-top: 20px;
+            background: #157A73;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        button:hover { background: #1A8F87; }
+
+        .success {
+            color: #166534;
+            background: #DCFCE7;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .checkbox-row { display: flex; align-items: center; gap: 9px; margin-top: 16px; }
+        .checkbox-row input { width: 16px; height: 16px; accent-color: #157A73; margin: 0; }
+        .checkbox-row label { margin: 0; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-l">
+            <h1>Industrial Training System</h1>
+            <p>Review Logbook Entry</p>
+        </div>
+        <a href="{% url 'review_logbook_list' %}" class="back-link">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Back to List
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>{{ entry.student.username }} — Week {{ entry.week_number }}</h2>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="success">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <h3>Activities</h3>
+        <div class="detail">{{ entry.activities }}</div>
+
+        <h3>Skills Acquired</h3>
+        <div class="detail">{{ entry.skills_acquired|default:"—" }}</div>
+
+        <h3>Challenges</h3>
+        <div class="detail">{{ entry.challenges|default:"—" }}</div>
+
+        {% if entry.attachment %}
+        <h3>Attachment</h3>
+        <div class="detail"><a href="{{ entry.attachment.url }}" target="_blank" style="color:#157A73;">{{ entry.attachment.name }}</a></div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <label>{{ form.supervisor_comment.label }}</label>
+            {{ form.supervisor_comment }}
+
+            <label>{{ form.grade.label }}</label>
+            {{ form.grade }}
+
+            <div class="checkbox-row">
+                {{ form.is_reviewed }}
+                <label>{{ form.is_reviewed.label }}</label>
+            </div>
+
+            <button type="submit"><i class="ti ti-check" aria-hidden="true"></i> Save Review</button>
+        </form>
+    </div>
+</body>
+</html>

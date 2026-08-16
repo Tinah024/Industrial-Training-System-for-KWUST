@@ -1,0 +1,11 @@
+<h2>Notifications</h2>
+
+{% for n in notifications %}
+    <div>
+        <b>{{ n.title }}</b><br>
+        {{ n.message }}<br>
+        <small>{{ n.created_at }}</small>
+    </div>
+{% empty %}
+    <p>No notifications yet.</p>
+{% endfor %}

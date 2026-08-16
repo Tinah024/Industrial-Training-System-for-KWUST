@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Supervisors — KWUST</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{font-family:'Inter',sans-serif;background:#F4F8F7;color:#1E293B;}
+
+        .topbar{background:#0A2E2F;padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;}
+        .topbar-title{color:#fff;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;}
+        .topbar-title i{color:#5CC8C0;}
+        .back-btn{color:rgba(255,255,255,.6);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;transition:color .15s;}
+        .back-btn:hover{color:#fff;}
+
+        .page{max-width:1100px;margin:2rem auto;padding:0 1.5rem;}
+        .page-header{margin-bottom:1.5rem;}
+        .page-header h1{font-size:22px;font-weight:800;color:#0A2E2F;}
+        .page-header p{font-size:13px;color:#5B7674;margin-top:4px;}
+
+        .card{background:#fff;border-radius:14px;border:1px solid #E5EEEC;overflow:hidden;}
+        .card-header{padding:1rem 1.5rem;border-bottom:1px solid #E5EEEC;display:flex;align-items:center;justify-content:space-between;}
+        .card-header h2{font-size:14px;font-weight:700;color:#0A2E2F;}
+        .badge{padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;}
+        .badge-teal{background:#E5F4F2;color:#157A73;}
+
+        table{width:100%;border-collapse:collapse;}
+        thead tr{background:#F8FAFB;}
+        th{padding:10px 16px;text-align:left;font-size:11px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;}
+        td{padding:12px 16px;border-top:1px solid #F1F5F4;font-size:13px;color:#1E293B;vertical-align:middle;}
+        tr:hover td{background:#FAFCFB;}
+
+        .student-name{font-weight:600;color:#0A2E2F;}
+        .student-reg{font-size:11px;color:#94A3B8;margin-top:2px;}
+
+        .supervisor-select{
+            width:100%;padding:7px 10px;border-radius:7px;
+            border:1px solid #E5EEEC;font-family:'Inter',sans-serif;
+            font-size:13px;color:#1E293B;background:#F8FAFB;
+            outline:none;cursor:pointer;
+        }
+        .supervisor-select:focus{border-color:#157A73;}
+
+        .save-btn{
+            background:#157A73;color:#fff;border:none;
+            padding:7px 16px;border-radius:7px;font-size:13px;
+            font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;
+            transition:background .15s;white-space:nowrap;
+        }
+        .save-btn:hover{background:#1A8F87;}
+
+        .status-assigned{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#157A73;}
+        .status-unassigned{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#F59E0B;}
+        .status-dot{width:6px;height:6px;border-radius:50%;}
+
+        .alert{padding:12px 16px;border-radius:9px;margin-bottom:1rem;font-size:13px;font-weight:500;}
+        .alert-success{background:#DCFCE7;color:#166534;border:1px solid #BBF7D0;}
+        .alert-error{background:#FFE4E6;color:#BE123C;border:1px solid #FECDD3;}
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-title"><i class="ti ti-users-group"></i> Assign Supervisors</div>
+    <a href="{% url 'admin_dashboard' %}" class="back-btn"><i class="ti ti-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<div class="page">
+    <div class="page-header">
+        <h1>Supervisor Assignment</h1>
+        <p>Assign each student to their university supervisor. Supervisors will only see their assigned students.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h2>All Students</h2>
+            <span class="badge badge-teal">{{ students.count }} students</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Student</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Assign Supervisor</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <div class="student-name">{{ student.user.get_full_name|default:student.user.username }}</div>
+                        <div class="student-reg">{{ student.registration_number }}</div>
+                    </td>
+                    <td>{{ student.course|default:"—" }}</td>
+                    <td>
+                        {% if student.university_supervisor %}
+                            <span class="status-assigned">
+                                <span class="status-dot" style="background:#157A73;"></span>
+                                {{ student.university_supervisor.get_full_name|default:student.university_supervisor.username }}
+                            </span>
+                        {% else %}
+                            <span class="status-unassigned">
+                                <span class="status-dot" style="background:#F59E0B;"></span>
+                                Unassigned
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{% url 'assign_supervisor_save' student.id %}" style="display:flex;gap:8px;align-items:center;">
+                            {% csrf_token %}
+                            <select name="supervisor_id" class="supervisor-select">
+                                <option value="">— Remove supervisor —</option>
+                                {% for supervisor in supervisors %}
+                                    <option value="{{ supervisor.id }}"
+                                        {% if student.university_supervisor.id == supervisor.id %}selected{% endif %}>
+                                        {{ supervisor.get_full_name|default:supervisor.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="save-btn"><i class="ti ti-check"></i> Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:40px;color:#94A3B8;">
+                        No students registered yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

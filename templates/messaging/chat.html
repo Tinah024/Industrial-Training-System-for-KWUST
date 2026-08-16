@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    .chat-wrap{max-width:600px;margin:28px auto;font-family:'Inter',sans-serif;padding:0 16px;}
+    .chat-head{font-size:18px;font-weight:700;color:#0A2E2F;margin-bottom:16px;}
+    .thread{background:#fff;border:1px solid #E5EEEC;border-radius:14px;padding:18px;margin-bottom:16px;min-height:200px;}
+    .bubble{max-width:75%;padding:10px 14px;border-radius:12px;margin-bottom:10px;font-size:13px;}
+    .sent{background:#157A73;color:#fff;margin-left:auto;}
+    .received{background:#F0F6F5;color:#0A2E2F;}
+    .bubble small{display:block;margin-top:4px;font-size:10px;opacity:.7;}
+    .msg-form{display:flex;gap:10px;}
+    .msg-form textarea{flex:1;padding:10px 13px;border:1px solid #DCE8E6;border-radius:9px;font-family:inherit;font-size:13px;resize:none;}
+    .msg-form button{background:#157A73;color:#fff;border:none;border-radius:9px;padding:0 18px;font-weight:600;cursor:pointer;}
+    .msg-form button:hover{background:#1A8F87;}
+    .empty{color:#94A3B8;font-size:13px;text-align:center;padding:30px 0;}
+</style>
+
+<div class="chat-wrap">
+    <div class="chat-head">Chat with {{ other_user.get_full_name|default:other_user.username }}</div>
+
+    <div class="thread">
+        {% for m in messages %}
+            <div class="bubble {% if m.sender == request.user %}sent{% else %}received{% endif %}">
+                {{ m.body }}
+                <small>{{ m.sent_at|date:"d M, H:i" }}</small>
+            </div>
+        {% empty %}
+            <p class="empty">No messages yet. Say hello!</p>
+        {% endfor %}
+    </div>
+
+    <form method="post" class="msg-form">
+        {% csrf_token %}
+        <textarea name="body" rows="1" placeholder="Type a message..." required></textarea>
+        <button type="submit">Send</button>
+    </form>
+</div>
+{% endblock %}

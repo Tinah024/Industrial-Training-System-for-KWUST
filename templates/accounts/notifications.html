@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="padding:20px 24px;">
+    <h2>Notifications</h2>
+
+    {% if notifications %}
+        <div style="background:#fff;border:1px solid #E5EEEC;border-radius:10px;overflow:hidden;">
+            {% for note in notifications %}
+            {% if not note.is_read %}
+            <div style="padding:14px 18px;border-bottom:1px solid #F0F6F5;background:#F8FBFA;">
+            {% else %}
+            <div style="padding:14px 18px;border-bottom:1px solid #F0F6F5;">
+            {% endif %}
+                <strong>{{ note.title }}</strong>
+                <p style="margin:4px 0 0;color:#5B7674;font-size:13px;">{{ note.message }}</p>
+                <small style="color:#94A3B8;">{{ note.created_at|date:"d M Y, H:i" }}</small>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No notifications yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

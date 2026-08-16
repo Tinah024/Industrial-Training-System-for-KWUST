@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review Logbooks - SIWES System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #F4F8F7; padding: 32px; color: #0A2E2F; }
+
+        .header {
+            background: #0A2E2F;
+            color: white;
+            padding: 24px 28px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: rgba(21,122,115,.4);
+            top: -70px; right: 10%;
+        }
+        .header-l { position: relative; z-index: 1; }
+        .header h1 { font-size: 19px; font-weight: 700; margin: 0 0 4px; }
+        .header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+        .back-link {
+            position: relative; z-index: 1;
+            color: rgba(255,255,255,.75);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color .15s;
+        }
+        .back-link:hover { color: #fff; }
+
+        .card {
+            background: #fff;
+            border: 1px solid #E5EEEC;
+            border-radius: 14px;
+            padding: 22px 26px;
+            margin-top: 18px;
+        }
+        .card h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #0A2E2F;
+            margin-bottom: 16px;
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            padding: 0 12px 10px;
+        }
+        td {
+            padding: 13px 12px;
+            border-top: 1px solid #F0F6F5;
+            font-size: 13px;
+            color: #1E293B;
+        }
+        tr:hover td { background: #F8FBFA; }
+
+        .badge {
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .reviewed { background: #DCFCE7; color: #166534; }
+        .pending { background: #FEF3C7; color: #92400E; }
+
+        .review-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 14px;
+            background: #157A73;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: background .15s;
+        }
+        .review-btn:hover { background: #1A8F87; }
+
+        .empty {
+            color: #94A3B8;
+            font-size: 13px;
+            font-style: italic;
+            padding: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-l">
+            <h1>Industrial Training System</h1>
+            <p>Logbook Review</p>
+        </div>
+        <a href="{% url 'dashboard' %}" class="back-link">
+            <i class="ti ti-arrow-left" aria-hidden="true"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card">
+        <h2>Student Logbook Submissions</h2>
+
+        {% if entries %}
+        <table>
+            <tr>
+                <th>Student</th>
+                <th>Week</th>
+                <th>Activities</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Grade</th>
+                <th></th>
+            </tr>
+            {% for entry in entries %}
+            <tr>
+                <td>{{ entry.student.username }}</td>
+                <td>Week {{ entry.week_number }}</td>
+                <td>{{ entry.activities|truncatewords:12 }}</td>
+                <td>{{ entry.submitted_at|date:"d M Y, H:i" }}</td>
+                <td>
+                    {% if entry.is_reviewed %}
+                        <span class="badge reviewed">Reviewed</span>
+                    {% else %}
+                        <span class="badge pending">Pending</span>
+                    {% endif %}
+                </td>
+                <td>{{ entry.grade|default:"—" }}</td>
+                <td><a href="{% url 'review_logbook_entry' entry.id %}" class="review-btn">Review</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p class="empty">No logbook entries have been submitted yet.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
